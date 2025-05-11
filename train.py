@@ -66,7 +66,7 @@ def process_func(example):
 
 
 def predict(messages, model, tokenizer):
-    device = "cuda"
+    device = "npu"
     text = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
@@ -87,11 +87,11 @@ def predict(messages, model, tokenizer):
     return response
 
 # 在modelscope上下载Qwen模型到本地目录下
-model_dir = snapshot_download("Qwen/Qwen3-1.7B", cache_dir="./", revision="master")
+# model_dir = snapshot_download("Qwen/Qwen3-1.7B", cache_dir="./", revision="master")
 
 # Transformers加载模型权重
-tokenizer = AutoTokenizer.from_pretrained("./Qwen/Qwen3-1.7B", use_fast=False, trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained("./Qwen/Qwen3-1.7B", device_map="auto", torch_dtype=torch.bfloat16)
+tokenizer = AutoTokenizer.from_pretrained("/data/models/Qwen/Qwen3-1.7B", use_fast=False, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("/data/models/Qwen/Qwen3-1.7B", device_map="auto", torch_dtype=torch.bfloat16)
 model.enable_input_require_grads()  # 开启梯度检查点时，要执行该方法
 
 # 加载、处理数据集和测试集
@@ -127,8 +127,8 @@ args = TrainingArguments(
     num_train_epochs=2,
     save_steps=400,
     learning_rate=1e-4,
-    save_on_each_node=True,
-    gradient_checkpointing=True,
+    save_on_each_node=False,
+    gradient_checkpointing=False,
     report_to="swanlab",
     run_name="qwen3-1.7B",
 )
