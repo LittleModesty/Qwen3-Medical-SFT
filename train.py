@@ -29,7 +29,7 @@ def dataset_jsonl_transfer(origin_path, new_path):
             # 解析每一行的json数据
             data = json.loads(line)
             input = data["question"]
-            output = f"<think>{data["think"]}</think> \n {data["answer"]}"
+            output = f"<think>{data['think']}</think> \n {data['answer']}"
             message = {
                 "instruction": PROMPT,
                 "input": f"{input}",
