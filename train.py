@@ -89,6 +89,33 @@ def predict(messages, model, tokenizer):
 # 在modelscope上下载Qwen模型到本地目录下
 # model_dir = snapshot_download("Qwen/Qwen3-1.7B", cache_dir="./", revision="master")
 
+print(f"Current working directory: {os.getcwd()}")
+print(f"ASCEND_RT_VISIBLE_DEVICES: {os.environ.get('ASCEND_RT_VISIBLE_DEVICES')}")
+# 您也可以打印 CUDA_VISIBLE_DEVICES 以防万一，但对于昇腾 NPU，前者更重要
+print(f"CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES')}")
+
+if hasattr(torch, 'npu') and hasattr(torch.npu, 'is_available') and torch.npu.is_available():
+    print(f"PyTorch NPU is available.")
+    device_count = torch.npu.device_count()
+    print(f"Number of NPUs available to PyTorch: {device_count}")
+    for i in range(device_count):
+        try:
+            # 注意：get_device_name 可能不是所有 NPU 后端都支持的标准API名称，
+            # 如果报错，您可能需要查阅昇腾 PyTorch 的文档获取正确的API
+            # 或者至少打印设备索引
+            print(f"NPU {i} - Name: {torch.npu.get_device_name(i)}, Properties: {torch.npu.get_device_properties(i)}")
+        except Exception as e:
+            print(f"Could not get detailed info for NPU {i}: {e}")
+            print(f"Logical NPU device index: npu:{i}") # 至少打印逻辑索引
+else:
+    print("PyTorch NPU not available or torch.npu API is different. Please check your PyTorch NPU installation.")
+    # 如果上面失败，尝试一个更通用的PyTorch设备检查
+    if torch.cuda.is_available(): # 理论上NPU环境不应该走这里，但作为检查
+        print(f"PyTorch CUDA is available. Device count: {torch.cuda.device_count()}")
+    else:
+        print("Neither PyTorch NPU nor CUDA seem to be properly available through standard checks.")
+
+
 # Transformers加载模型权重
 tokenizer = AutoTokenizer.from_pretrained("/data/models/Qwen3-1.7B", use_fast=False, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained("/data/models/Qwen3-1.7B", device_map="auto", torch_dtype=torch.bfloat16)
