@@ -2,8 +2,7 @@ import json
 import pandas as pd
 import torch
 from datasets import Dataset
-from modelscope import snapshot_download, AutoTokenizer
-from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForSeq2Seq
+from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForSeq2Seq
 import os
 import swanlab
 
