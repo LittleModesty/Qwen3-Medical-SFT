@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 import torch
+import torch-npu
 from datasets import Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForSeq2Seq
 import os
