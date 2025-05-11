@@ -136,12 +136,12 @@ if not os.path.exists(test_jsonl_new_path):
 # 得到训练集
 train_df = pd.read_json(train_jsonl_new_path, lines=True)
 train_ds = Dataset.from_pandas(train_df)
-train_dataset = train_ds.map(process_func, remove_columns=train_ds.column_names)
+train_dataset = train_ds.map(process_func, remove_columns=train_ds.column_names, num_proc=128)
 
 # 得到验证集
 eval_df = pd.read_json(test_jsonl_new_path, lines=True)
 eval_ds = Dataset.from_pandas(eval_df)
-eval_dataset = eval_ds.map(process_func, remove_columns=eval_ds.column_names)
+eval_dataset = eval_ds.map(process_func, remove_columns=eval_ds.column_names, num_proc=128)
 
 args = TrainingArguments(
     output_dir="./output/Qwen3-1.7B",
